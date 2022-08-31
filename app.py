@@ -1,5 +1,21 @@
 from models import (Base, session, Product, engine)
-#Main menu (view a product, add a product, make a backup)
+import datetime
+import csv
+
+def add_csv():
+    with open('inventory.csv') as csvfile:
+        data = csv.reader(csvfile)
+        for row in data:
+            print(row)
+            
+def clean_quantity():
+    
+def clean_price():
+
+def clean_date_updated():
+
+def create_list_of_product_dictionaries():
+    
 def menu():
     while True:
         print('''
@@ -15,8 +31,26 @@ def menu():
                   \rPlease only choose one of the options above.
                   \rEither the letter v, a or b (in lowercase.)
                   \nPress enter to try again. ''')
-#data cleaning function
+            
 
+
+def app():
+    app_running = True
+    while app_running:
+        choice = menu()
+        if choice == "v":
+            #view product
+            pass
+        elif choice == "a":
+            #add product
+            pass
+        elif choice == "b":
+            pass
+        else:
+            print("Goodbye!")
+            app_running = False
+        
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    menu()
+    #app()
+    add_csv()
