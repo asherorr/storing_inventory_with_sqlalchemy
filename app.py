@@ -7,38 +7,64 @@ def menu():
     while True:
         print('''
               \rMENU
-              \r1) View a Product (Enter v)
-              \r2) Add a Product (Enter a)
-              \r3) Make a Backup of the Database (Enter b)''')
+              \rView a Product (Enter v)
+              \rAdd a Product (Enter a)
+              \rMake a Backup of the Database (Enter b)''')
         choice = input("\nWhat would you like to do? ")
-        if choice in ['v', 'a', 'b']:
+        if choice in ['v', 'V', 'a', 'A', 'b', 'B']:
             return choice
         else:
             input('''
                   \rPlease only choose one of the options above.
-                  \rEither the letter v, a or b (in lowercase.)
+                  \rEither the letter v, a or b.
                   \nPress enter to try again. ''')
             
 
 def clean_price(price_str):
-    split_price = price_str.split('$')
-    updated_price = split_price[1]
-    price_float = float(updated_price)
-    return int(price_float* 100)
+    try:
+        if price_str[0] == "$":
+            split_price = price_str.split('$')
+            updated_price = split_price[1]
+            price_float = float(updated_price)
+            return int(price_float* 100)
+        else:
+            price_str_to_num = float(price_str)
+            updated_price = price_str_to_num
+            return int(updated_price * 100)
+    except ValueError:
+        input('''
+              \r*** PRICE ERROR ***
+              \rThe price should be a number without a currency symbol (Ex: 20.99)
+              \rPress enter to try again.''')
+        return
     
 
-
 def clean_quantity(quantity_str):
-    cleaned_quantity = int(quantity_str)
-    return cleaned_quantity
-
+    try:
+        cleaned_quantity = int(quantity_str)
+        return cleaned_quantity
+    except ValueError:
+        input('''
+        \r*** QUANTITY ERROR ***
+        \rThe date should be a number (Ex: 20).)
+        \rPress enter to try again.''')
+    return
 
 def clean_date_updated(date_str):
-    split_date = date_str.split("/")
-    month = int(split_date[0])
-    day = int(split_date[1])
-    year = int(split_date[2])
-    return datetime.date(year, month, day)
+    try:
+        split_date = date_str.split("/")
+        month = int(split_date[0])
+        day = int(split_date[1])
+        year = int(split_date[2])
+        return datetime.date(year, month, day)
+    except ValueError:
+        input('''
+        \r*** DATE ERROR ***
+        \rThe date should be entered like this: 8/15/2022 (Month/Day/Year).
+        \rIf the month is a single digit, do not put a 0 before it (for example: 06)
+        \rPress enter to try again.''')
+        return
+        
 
 def add_csv():
     with open('inventory.csv') as csvfile:
@@ -68,7 +94,25 @@ def app():
             pass
         elif choice == "a":
             #add product
-            pass
+            product_name = input("Product name: ")
+            price_error = True
+            while price_error:
+                product_price = input("Product price: ")
+                product_price = clean_price(product_price)
+                if type(product_price) == int:
+                    price_error = False
+            product_quantity_error = True
+            while product_quantity_error:
+                product_quantity = input("Product quantity: ")
+                product_quantity = clean_quantity(product_quantity)
+                if type(product_quantity) == int:
+                    product_quantity_error = False
+            date_updated_error = True
+            while date_updated_error:
+                date_updated = input("Date updated (Ex: 10/11/2012) (Month/Day/Year): ")
+                date_updated = clean_date_updated(date_updated)
+                if type(date_updated) == datetime.date:
+                    date_updated_error = False
         elif choice == "b":
             pass
         else:
@@ -77,7 +121,5 @@ def app():
         
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    clean_price("$2.03")
-    add_csv()
-    for product in session.query(Product):
-        print(product)
+    #add_csv()
+    app()
