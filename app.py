@@ -1,6 +1,8 @@
+import errno
 from models import (Base, session, Product, engine)
 import datetime
 import csv
+import time
 
 
 def menu():
@@ -85,15 +87,35 @@ def add_csv():
 def create_list_of_product_dictionaries():
     pass
 
+def view_product():
+    import models
+    list_available_ids = []
+    for item in models.session.query(models.Product).filter(models.Product.product_id):
+        list_available_ids.append(item.product_id)
+    try:
+        user_search_choice = int(input("Enter the ID of the product you'd like to look up: "))
+        if user_search_choice not in list_available_ids:
+            raise ValueError('''
+                                \r***PRODUCT ID ERROR***
+                                \rThat product ID does not exist in the database.
+                                \rPlease try again.''')
+    except ValueError:
+        print("Oh no! Please enter only a number.")
+    else:
+        for item in models.session.query(models.Product).filter(models.Product.product_id == user_search_choice):
+            print(f'''\rProduct found! 
+                  \r{item}''')
+            time.sleep(2)
+            return
+    
+
 def app():
     app_running = True
     while app_running:
         choice = menu()
         if choice == "v":
-            #view product
-            pass
+            view_product()
         elif choice == "a":
-            #add product
             product_name = input("Product name: ")
             price_error = True
             while price_error:
@@ -113,6 +135,11 @@ def app():
                 date_updated = clean_date_updated(date_updated)
                 if type(date_updated) == datetime.date:
                     date_updated_error = False
+            new_product = Product(product_name=product_name, product_price=product_price, product_quantity=product_quantity, date_updated=date_updated)
+            session.add(new_product)
+            session.commit()
+            print("Product added!")
+            time.sleep(1.5)
         elif choice == "b":
             pass
         else:
@@ -121,5 +148,5 @@ def app():
         
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    #add_csv()
+    add_csv()
     app()
