@@ -83,31 +83,39 @@ def add_csv():
                 session.add(new_product)
         session.commit()
 
-
-def create_list_of_product_dictionaries():
-    pass
-
 def view_product():
     import models
     list_available_ids = []
     for item in models.session.query(models.Product).filter(models.Product.product_id):
         list_available_ids.append(item.product_id)
     try:
-        user_search_choice = int(input("Enter the ID of the product you'd like to look up: "))
+        try:
+            user_search_choice = int(input("Enter the ID of the product you'd like to look up: "))
+        except ValueError:
+            raise ValueError('''
+                            \r***PRODUCT ID ERROR***
+                            \rPlease enter only a number.''')
         if user_search_choice not in list_available_ids:
             raise ValueError('''
-                                \r***PRODUCT ID ERROR***
-                                \rThat product ID does not exist in the database.
-                                \rPlease try again.''')
-    except ValueError:
-        print("Oh no! Please enter only a number.")
+                            \r***PRODUCT ID ERROR***
+                            \rThat product ID does not exist in the database.
+                            \rPlease try again.''')
+    except ValueError as err:
+        print(err)
     else:
         for item in models.session.query(models.Product).filter(models.Product.product_id == user_search_choice):
             print(f'''\rProduct found! 
                   \r{item}''')
             time.sleep(2)
             return
+        
+def add_product():
+    pass
     
+
+def backup_csv():
+    pass
+
 
 def app():
     app_running = True
@@ -145,6 +153,7 @@ def app():
         else:
             print("Goodbye!")
             app_running = False
+        
         
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
