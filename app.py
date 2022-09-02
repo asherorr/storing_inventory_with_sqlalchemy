@@ -63,7 +63,6 @@ def clean_date_updated(date_str):
         input('''
         \r*** DATE ERROR ***
         \rThe date should be entered like this: 8/15/2022 (Month/Day/Year).
-        \rIf the month is a single digit, do not put a 0 before it (for example: 06)
         \rPress enter to try again.''')
         return
         
@@ -110,7 +109,33 @@ def view_product():
             return
         
 def add_product():
-    pass
+    product_name = input("Product name: ")
+    price_error = True
+    while price_error:
+        product_price = input("Product price: ")
+        product_price = clean_price(product_price)
+        if type(product_price) == int:
+            price_error = False
+    product_quantity_error = True
+    while product_quantity_error:
+        product_quantity = input("Product quantity: ")
+        product_quantity = clean_quantity(product_quantity)
+        if type(product_quantity) == int:
+            product_quantity_error = False
+    date_updated_error = True
+    while date_updated_error:
+        date_updated = input(
+            "Date updated (Ex: 10/11/2012) (Month/Day/Year): ")
+        date_updated = clean_date_updated(date_updated)
+        if type(date_updated) == datetime.date:
+            date_updated_error = False
+    new_product = Product(product_name=product_name, product_price=product_price,
+                            product_quantity=product_quantity, date_updated=date_updated)
+    session.add(new_product)
+    session.commit()
+    print("Product added!")
+    time.sleep(1.5)
+    return
     
 
 def backup_csv():
@@ -124,30 +149,7 @@ def app():
         if choice == "v":
             view_product()
         elif choice == "a":
-            product_name = input("Product name: ")
-            price_error = True
-            while price_error:
-                product_price = input("Product price: ")
-                product_price = clean_price(product_price)
-                if type(product_price) == int:
-                    price_error = False
-            product_quantity_error = True
-            while product_quantity_error:
-                product_quantity = input("Product quantity: ")
-                product_quantity = clean_quantity(product_quantity)
-                if type(product_quantity) == int:
-                    product_quantity_error = False
-            date_updated_error = True
-            while date_updated_error:
-                date_updated = input("Date updated (Ex: 10/11/2012) (Month/Day/Year): ")
-                date_updated = clean_date_updated(date_updated)
-                if type(date_updated) == datetime.date:
-                    date_updated_error = False
-            new_product = Product(product_name=product_name, product_price=product_price, product_quantity=product_quantity, date_updated=date_updated)
-            session.add(new_product)
-            session.commit()
-            print("Product added!")
-            time.sleep(1.5)
+            add_product()
         elif choice == "b":
             pass
         else:
