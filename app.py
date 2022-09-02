@@ -133,15 +133,17 @@ def add_product():
     #query database to find duplicate record if there is one [DONE]
     import models
     duplicate_item = models.session.query(Product).filter(Product.product_name==new_product_name).first()
-    list_of_duplicate_items = list(duplicate_item)
-    if len(list_of_duplicate_items) > 0:
+    if duplicate_item is not None:
     #if duplicate product name exists in the database
         #update the existing record with price, quantity, and date_updated.
         duplicate_item.product_price = product_price
         duplicate_item.product_quantity = product_quantity
         duplicate_item.date_published = date_updated
         session.commit()
-        print(f'''Product {duplicate_item.name} updated!''')
+        print(f'''*** MESSAGE ***
+              \r{duplicate_item.product_name} already exists in your database.
+              \rInstead of adding a duplicate to the database, the existing information for {duplicate_item.product_name} was updated.''')
+        time.sleep(1.5)
         return
     #else, add the brand new product.
     else:
