@@ -108,8 +108,9 @@ def view_product():
             time.sleep(2)
             return
         
+        
 def add_product():
-    product_name = input("Product name: ")
+    new_product_name = input("Product name: ")
     price_error = True
     while price_error:
         product_price = input("Product price: ")
@@ -129,13 +130,28 @@ def add_product():
         date_updated = clean_date_updated(date_updated)
         if type(date_updated) == datetime.date:
             date_updated_error = False
-    new_product = Product(product_name=product_name, product_price=product_price,
-                            product_quantity=product_quantity, date_updated=date_updated)
-    session.add(new_product)
-    session.commit()
-    print("Product added!")
-    time.sleep(1.5)
-    return
+    #query database to find duplicate record if there is one [DONE]
+    import models
+    duplicate_item = models.session.query(Product).filter(Product.product_name==new_product_name).first()
+    list_of_duplicate_items = list(duplicate_item)
+    if len(list_of_duplicate_items) > 0:
+    #if duplicate product name exists in the database
+        #update the existing record with price, quantity, and date_updated.
+        duplicate_item.product_price = product_price
+        duplicate_item.product_quantity = product_quantity
+        duplicate_item.date_published = date_updated
+        session.commit()
+        print(f'''Product {duplicate_item.name} updated!''')
+        return
+    #else, add the brand new product.
+    else:
+        new_product = Product(product_name=new_product_name, product_price=product_price,
+                                product_quantity=product_quantity, date_updated=date_updated)
+        session.add(new_product)
+        session.commit()
+        print("Product added!")
+        time.sleep(1.5)
+        return
     
 
 def backup_csv():
