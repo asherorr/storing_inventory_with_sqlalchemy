@@ -9,9 +9,9 @@ def menu():
     while True:
         print('''
               \rMENU
-              \rView a Product (Enter v)
-              \rAdd a Product (Enter a)
-              \rMake a Backup of the Database (Enter b)''')
+              \rView a single product's inventory (Enter v)
+              \rAdd a new product to the database (Enter a)
+              \rMake a backup of the entire inventory (Enter b)''')
         choice = input("\nWhat would you like to do? ")
         if choice in ['v', 'V', 'a', 'A', 'b', 'B']:
             return choice
@@ -55,6 +55,8 @@ def clean_quantity(quantity_str):
 def clean_date_updated(date_str):
     try:
         split_date = date_str.split("/")
+        if "/" not in split_date:
+            raise ValueError
         month = int(split_date[0])
         day = int(split_date[1])
         year = int(split_date[2])
@@ -93,7 +95,8 @@ def view_product():
         except ValueError:
             raise ValueError('''
                             \r***PRODUCT ID ERROR***
-                            \rPlease enter only a number.''')
+                            \rPlease enter only a whole number.
+                            \rEx: 25''')
         if user_search_choice not in list_available_ids:
             raise ValueError('''
                             \r***PRODUCT ID ERROR***
@@ -130,7 +133,7 @@ def add_product():
         date_updated = clean_date_updated(date_updated)
         if type(date_updated) == datetime.date:
             date_updated_error = False
-    #query database to find duplicate record if there is one [DONE]
+    #query database to find duplicate record if there is one
     import models
     duplicate_item = models.session.query(Product).filter(Product.product_name==new_product_name).first()
     if duplicate_item is not None:
