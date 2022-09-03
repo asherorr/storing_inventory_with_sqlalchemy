@@ -1,4 +1,4 @@
-import errno
+import sqlite3
 from models import (Base, session, Product, engine)
 import datetime
 import csv
@@ -155,10 +155,20 @@ def add_product():
         time.sleep(1.5)
         return
     
-
-def backup_csv():
-    pass
-
+def export_database_to_csv():
+    conn = sqlite3.connect('inventory.db')
+    cursor = conn.cursor()
+    cursor.execute("select * from products;")
+    with open("backupfile.csv", 'w', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow([i[0] for i in cursor.description])
+        csv_writer.writerows(cursor)
+    conn.close()
+    print('''
+          \rDatabase successfully backed up!
+          \rIt should be saved as backupfile.csv''')
+    time.sleep(1.5)
+    
 
 def app():
     app_running = True
@@ -169,7 +179,7 @@ def app():
         elif choice == "a":
             add_product()
         elif choice == "b":
-            pass
+            export_database_to_csv()
         else:
             print("Goodbye!")
             app_running = False
