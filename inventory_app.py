@@ -194,6 +194,7 @@ def app():
             print("Goodbye!")
             app_running = False
 
+
 def main():
     Base.metadata.create_all(engine)
     add_csv()
