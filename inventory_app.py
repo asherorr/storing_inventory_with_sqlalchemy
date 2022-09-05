@@ -1,7 +1,8 @@
 import sqlite3
 from models import (Base, session, Product, engine)
-import datetime
+from datetime import datetime
 import csv
+import pytz
 import time
 
 
@@ -61,7 +62,13 @@ def clean_date_updated(date_str):
         month = int(split_date[0])
         day = int(split_date[1])
         year = int(split_date[2])
-        return datetime.date(year, month, day)
+        now = datetime.now(pytz.timezone('US/Eastern'))
+        hour = now.hour
+        minute = now.minute
+        second = now.second
+        microsecond = now.microsecond
+        date = datetime(year, month, day, hour, minute, second, microsecond)
+        return date
     except ValueError:
         input('''
         \r*** DATE ERROR ***
@@ -112,7 +119,10 @@ def view_product():
         else:
             for item in models.session.query(models.Product).filter(models.Product.product_id == user_search_choice):
                 print(f'''\rProduct found! 
-                    \r{item}''')
+                 \rName: {item.product_name}
+                \rQuantity: {item.product_quantity}
+                \rPrice: ${item.product_price/100}
+                \rDate Updated: {item.date_updated.year}-{item.date_updated.month}-{item.date_updated.day} (Year/Month/Day)''')
                 time.sleep(2)
                 return
 
@@ -136,24 +146,26 @@ def add_product():
         date_updated = input(
             "Date updated (Ex: 10/11/2012) (Month/Day/Year): ")
         date_updated = clean_date_updated(date_updated)
-        if type(date_updated) == datetime.date:
+        if type(date_updated) == datetime:
             date_updated_error = False
-    #query database to find duplicate record if there is one
-    import models
-    duplicate_item = models.session.query(Product).filter(
+    #query database to find duplicate record (if there is one.)
+    duplicate_item = session.query(Product).filter(
         Product.product_name == new_product_name).first()
+    print(duplicate_item)
+    #if duplicate product name exists in the database
     if duplicate_item is not None:
-        #if duplicate product name exists in the database
+        #check to see which product entry was updated most recently and only save that data.
+        if duplicate_item.date_updated < date_updated:
         #update the existing record with price, quantity, and date_updated.
-        duplicate_item.product_price = product_price
-        duplicate_item.product_quantity = product_quantity
-        duplicate_item.date_published = date_updated
-        session.commit()
-        print(f'''*** MESSAGE ***
-              \r{duplicate_item.product_name} already exists in your database.
-              \rInstead of adding a duplicate to the database, the existing information for {duplicate_item.product_name} was updated.''')
-        time.sleep(1.5)
-        return
+                duplicate_item.product_price = product_price
+                duplicate_item.product_quantity = product_quantity
+                duplicate_item.date_published = date_updated
+                session.commit()
+                print(f'''*** MESSAGE ***
+                    \r{duplicate_item.product_name} already exists in your database.
+                    \rInstead of adding a duplicate to the database, the data for {duplicate_item.product_name} was updated to reflect your most recent entry.''')
+                time.sleep(2)
+                return
     #else, add the brand new product.
     else:
         new_product = Product(product_name=new_product_name, product_price=product_price,

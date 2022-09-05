@@ -1,5 +1,5 @@
 from sqlalchemy import (create_engine, Column,
-                        Integer, String, Date)
+                        Integer, String, DateTime)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -16,7 +16,7 @@ class Product(Base):
     product_name = Column("Product Name", String)
     product_price = Column("Product Price", Integer)
     product_quantity = Column("Product Quantity", Integer)
-    date_updated = Column("Date Updated", Date)
+    date_updated = Column("Date Updated", DateTime)
     
     def __repr__(self):
         return f'Name: {self.product_name}, Quantity: {self.product_quantity}, Price: {self.product_price}, Date Updated: {self.date_updated}'
