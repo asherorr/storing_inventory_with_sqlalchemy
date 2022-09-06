@@ -92,6 +92,11 @@ def add_csv():
                 new_product = Product(product_name=product_name, product_price=product_price,
                                       product_quantity=product_quantity, date_updated=date_updated)
                 session.add(new_product)
+            if product_in_db == True:
+                if product_in_db.date_updated < new_product.date_updated:
+                    session.add(new_product)
+                elif product_in_db.date_updated > new_product.date_updated:
+                    session.add(product_in_db)
         session.commit()
 
 
@@ -151,21 +156,18 @@ def add_product():
     #query database to find duplicate record (if there is one.)
     duplicate_item = session.query(Product).filter(
         Product.product_name == new_product_name).first()
-    print(duplicate_item)
     #if duplicate product name exists in the database
     if duplicate_item is not None:
-        #check to see which product entry was updated most recently and only save that data.
-        if duplicate_item.date_updated < date_updated:
         #update the existing record with price, quantity, and date_updated.
-                duplicate_item.product_price = product_price
-                duplicate_item.product_quantity = product_quantity
-                duplicate_item.date_published = date_updated
-                session.commit()
-                print(f'''*** MESSAGE ***
-                    \r{duplicate_item.product_name} already exists in your database.
-                    \rInstead of adding a duplicate to the database, the data for {duplicate_item.product_name} was updated to reflect your most recent entry.''')
-                time.sleep(2)
-                return
+        duplicate_item.product_price = product_price
+        duplicate_item.product_quantity = product_quantity
+        duplicate_item.date_published = date_updated
+        session.commit()
+        print(f'''*** MESSAGE ***
+            \r{duplicate_item.product_name} already exists in your database.
+            \rInstead of adding a duplicate to the database, the existing data for {duplicate_item.product_name} was updated.''')
+        time.sleep(2)
+        return
     #else, add the brand new product.
     else:
         new_product = Product(product_name=new_product_name, product_price=product_price,
