@@ -105,19 +105,6 @@ def add_csv():
                 elif product_in_db.date_updated > new_product.date_updated:
                     pass
         session.commit()
-            # elif product_in_db == True:
-            #     product_name = row[0]
-            #     product_price = clean_price(row[1])
-            #     product_quantity = clean_quantity(row[2])
-            #     date_updated = clean_date_updated(row[3])
-            #     new_product = Product(product_name=product_name, product_price=product_price,
-            #                           product_quantity=product_quantity, date_updated=date_updated)
-            #     if product_in_db.date_updated < new_product.date_updated:
-            #         session.add(new_product)
-            #         session.delete(product_in_db)
-            #     elif product_in_db.date_updated > new_product.date_updated:
-            #         pass
-        session.commit()
 
 
 def view_product():
