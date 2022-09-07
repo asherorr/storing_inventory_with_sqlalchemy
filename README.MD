@@ -15,7 +15,7 @@ It has one table, "products", which contains an id (PKID), name, price, quantity
 
 The file inventory_app.py contains a script that enables users to interact with the database. 
 
-First, it adds an existing CSV. Data is cleaned as each row is added to the database: item price and quantity are converted to integers, and date_updated becomes a datetime object. 
+First, it adds an existing CSV. Data is cleaned as each row is added to the database: item price and quantity are converted to integers, and date_updated becomes a datetime object.  If a duplicate product_name value is found, the app will check to see which product entry was most recently updated and only save that data.
 
 Then a menu displays. Users can search for a product, add a product, or make a backup (a new CSV file) of the database.
 
